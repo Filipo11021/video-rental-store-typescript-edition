@@ -1,0 +1,29 @@
+{
+  "name": "@repo/rental",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "eslint src/ --max-warnings 0",
+    "lint:fix": "eslint src/ --max-warnings 0 --fix",
+    "test": "vitest",
+    "check-types": "tsc --noEmit"
+  },
+  "exports": {
+    "./api": "./src/api.ts",
+    "./module": "./src/module.ts"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.29.0",
+    "typescript": "5.8.2"
+  },
+  "dependencies": {
+    "vitest": "^3.2.4",
+    "@repo/film": "workspace:*",
+    "@repo/schema-validator": "workspace:*",
+    "@repo/type-safe-errors": "workspace:*"
+  }
+}

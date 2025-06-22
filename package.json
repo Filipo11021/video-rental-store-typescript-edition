@@ -1,0 +1,15 @@
+{
+  "name": "app",
+  "private": true,
+  "scripts": {
+    "format": "prettier . --check",
+    "format:fix": "prettier . --write",
+    "test": "pnpm -r --parallel test",
+    "lint": "pnpm -r --parallel lint",
+    "lint:fix": "pnpm -r --parallel lint:fix",
+    "check-types": "pnpm -r --parallel check-types"
+  },
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
+}

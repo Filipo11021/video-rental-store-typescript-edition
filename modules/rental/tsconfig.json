@@ -1,0 +1,10 @@
+{
+  "extends": "@repo/typescript-config/node.json",
+  "compilerOptions": {
+    "lib": ["ES2020"],
+    "sourceMap": true,
+    "types": ["node"]
+  },
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"]
+}
