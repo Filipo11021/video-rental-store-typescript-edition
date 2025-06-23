@@ -1,8 +1,8 @@
 import { Result, tryAsync } from '@repo/type-safe-errors';
 import { Film, FilmId } from './film.ts';
 
-type FilmRepositoryCreateError = Readonly<{
-  type: 'FilmRepositoryCreateError';
+type FilmRepositorySaveError = Readonly<{
+  type: 'FilmRepositorySaveError';
   message: string;
 }>;
 
@@ -12,7 +12,7 @@ type FilmRepositoryNotFoundError = Readonly<{
 }>;
 
 type FilmRepository = Readonly<{
-  create: (film: Film) => Promise<Result<Film, FilmRepositoryCreateError>>;
+  save: (film: Film) => Promise<Result<Film, FilmRepositorySaveError>>;
   findById: (id: FilmId) => Promise<Result<Film, FilmRepositoryNotFoundError>>;
 }>;
 
@@ -28,7 +28,7 @@ export function createInMemoryFilmRepository(): FilmRepository {
   const films = new Map<string, Film>();
 
   return {
-    async create(film: Film): Promise<Result<Film, FilmRepositoryCreateError>> {
+    async save(film: Film): Promise<Result<Film, FilmRepositorySaveError>> {
       return tryAsync(
         async () => {
           films.set(film.id, film);
@@ -36,7 +36,7 @@ export function createInMemoryFilmRepository(): FilmRepository {
         },
         (error) => {
           return {
-            type: 'FilmRepositoryCreateError',
+            type: 'FilmRepositorySaveError',
             message: error instanceof Error ? error.message : 'Unknown error',
           } as const;
         },

@@ -27,13 +27,13 @@ export function createRentalApi(deps: RentalApiDeps): RentalApi {
       });
       if (!rentalResult.ok) return err(rentalResult.error.type);
 
-      const createRentalResult = await deps.rentalRepository.create(rentalResult.value);
-      if (!createRentalResult.ok) return err(createRentalResult.error);
+      const savedRentalResult = await deps.rentalRepository.save(rentalResult.value);
+      if (!savedRentalResult.ok) return err(savedRentalResult.error);
 
       return ok({
-        id: createRentalResult.value.id,
-        filmId: createRentalResult.value.filmId,
-        customerId: createRentalResult.value.customerId,
+        id: savedRentalResult.value.id,
+        filmId: savedRentalResult.value.filmId,
+        customerId: savedRentalResult.value.customerId,
         createdAt: rentalResult.value.createdAt,
       });
     },

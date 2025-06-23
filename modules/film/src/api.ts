@@ -20,10 +20,10 @@ export function createFilmApi(deps: FilmApiDeps): FilmApi {
 
       if (!filmResult.ok) return err(filmResult.error.type);
 
-      const createFilmResult = await deps.filmRepository.create(filmResult.value);
-      if (!createFilmResult.ok) return err(createFilmResult.error.message);
+      const savedFilmResult = await deps.filmRepository.save(filmResult.value);
+      if (!savedFilmResult.ok) return err(savedFilmResult.error.message);
 
-      return ok(filmToDto(filmResult.value));
+      return ok(filmToDto(savedFilmResult.value));
     },
     getFilm: async (id: string): Promise<Result<FilmDto, string>> => {
       const filmIdResult = filmId.from(id);

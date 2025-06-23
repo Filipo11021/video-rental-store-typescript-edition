@@ -6,7 +6,7 @@ export type RentalRepositoryDep = Readonly<{
 }>;
 
 type RentalRepository = Readonly<{
-  create: (rental: Rental) => Promise<Result<Rental, string>>;
+  save: (rental: Rental) => Promise<Result<Rental, string>>;
   update: (rental: Rental) => Promise<Result<Rental, string>>;
   getById: (id: string) => Promise<Result<Rental, string>>;
 }>;
@@ -14,7 +14,7 @@ type RentalRepository = Readonly<{
 export function createInMemoryRentalRepository(): RentalRepository {
   const rentals: Rental[] = [];
   return {
-    create: async (rental: Rental) => {
+    save: async (rental: Rental) => {
       rentals.push(rental);
       return ok(rental);
     },
