@@ -6,7 +6,7 @@ import { CreateRentDto, CreateReturnDto, RentDto, ReturnDto } from './dto.ts';
 
 type RentalApiDeps = FilmApiDep & RentalRepositoryDep;
 
-type RentalApi = Readonly<{
+export type RentalApi = Readonly<{
   rent: (data: CreateRentDto) => Promise<Result<RentDto, string>>;
   return: (data: CreateReturnDto) => Promise<Result<ReturnDto, string>>;
 }>;
