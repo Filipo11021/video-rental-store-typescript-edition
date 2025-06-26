@@ -1,19 +1,17 @@
-import { literal, maxLength, minLength, object, String, union, DateIso, brand } from '@repo/schema-validator';
+import { literal, maxLength, minLength, object, String, union, brand, Date as DateType } from '@repo/schema-validator';
 import { randomUUID } from 'node:crypto';
-import { CreateFilmDto } from './film-dto.ts';
+import { CreateFilmDto, FilmDto } from './film-dto.ts';
 import { err, ok, Result } from '@repo/type-safe-errors';
 
 export const filmId = brand('FilmId', String);
 export const createFilmId = () => filmId.from(randomUUID().toString());
-const filmType = union(literal('old'), literal('new'), literal('regular'));
-export const filmTitle = maxLength(255)(minLength(2)(String));
 
 export type FilmId = typeof filmId.Type;
 export const film = object({
   id: filmId,
-  title: filmTitle,
-  type: filmType,
-  createdAt: DateIso,
+  title: maxLength(255)(minLength(2)(String)),
+  type: union(literal('old'), literal('new'), literal('regular')),
+  createdAt: DateType,
 });
 
 export type Film = typeof film.Type;
@@ -37,4 +35,12 @@ export function createFilm(data: CreateFilmDto): Result<Film, FilmError> {
   if (!filmResult.ok) return err({ type: 'InvalidFilm' });
 
   return ok(filmResult.value);
+}
+
+export function filmToDto(film: Film): FilmDto {
+  return {
+    id: film.id,
+    title: film.title,
+    type: film.type,
+  };
 }

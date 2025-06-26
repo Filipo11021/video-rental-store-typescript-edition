@@ -1,7 +1,7 @@
 import type { UserDto } from '@repo/auth/dto';
-import { CreateFilmDto, FilmDto, filmToDto } from './film-dto.ts';
+import { CreateFilmDto, FilmDto } from './film-dto.ts';
 import { FilmRepositoryDep } from './film-repository.ts';
-import { createFilm, filmId } from './film.ts';
+import { createFilm, filmId, filmToDto } from './film.ts';
 import { err, ok, Result } from '@repo/type-safe-errors';
 
 type FilmApiDeps = FilmRepositoryDep;
@@ -10,6 +10,7 @@ export type FilmApi = Readonly<{
   createFilm: (film: CreateFilmDto, user: UserDto) => Promise<Result<FilmDto, string>>;
   getFilm: (id: string) => Promise<Result<FilmDto, string>>;
 }>;
+
 export type FilmApiDep = Readonly<{
   filmApi: FilmApi;
 }>;
