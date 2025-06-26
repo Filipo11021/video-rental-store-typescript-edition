@@ -1,14 +1,17 @@
 {
-  "name": "@repo/server",
+  "name": "@repo/auth",
   "version": "0.0.0",
   "type": "module",
   "private": true,
   "scripts": {
     "lint": "eslint src/ --max-warnings 0",
     "lint:fix": "eslint src/ --max-warnings 0 --fix",
-    "check-types": "tsc --noEmit",
-    "dev": "tsx watch src/main.ts",
-    "start": "tsx src/main.ts"
+    "test": "vitest"
+  },
+  "exports": {
+    "./api": "./src/api.ts",
+    "./module": "./src/module.ts",
+    "./dto": "./src/dto.ts"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -18,9 +21,12 @@
     "typescript": "5.8.2"
   },
   "dependencies": {
-    "tsx": "^4.20.3",
-    "@repo/film": "workspace:*",
-    "@repo/rental": "workspace:*",
-    "@repo/auth": "workspace:*"
+    "@repo/schema-validator": "workspace:*",
+    "@repo/type-safe-errors": "workspace:*",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "vitest": "^3.2.4"
   }
 }

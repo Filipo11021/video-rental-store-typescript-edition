@@ -6,7 +6,6 @@ export type CreateRentalDto = Readonly<{
 
 export type CreateRentDto = Readonly<{
   filmId: string;
-  customerId: string;
 }>;
 
 export type RentDto = Readonly<{

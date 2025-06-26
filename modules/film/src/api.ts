@@ -1,3 +1,4 @@
+import type { UserDto } from '@repo/auth/dto';
 import { CreateFilmDto, FilmDto, filmToDto } from './film-dto.ts';
 import { FilmRepositoryDep } from './film-repository.ts';
 import { createFilm, filmId } from './film.ts';
@@ -6,7 +7,7 @@ import { err, ok, Result } from '@repo/type-safe-errors';
 type FilmApiDeps = FilmRepositoryDep;
 
 export type FilmApi = Readonly<{
-  createFilm: (film: CreateFilmDto) => Promise<Result<FilmDto, string>>;
+  createFilm: (film: CreateFilmDto, user: UserDto) => Promise<Result<FilmDto, string>>;
   getFilm: (id: string) => Promise<Result<FilmDto, string>>;
 }>;
 export type FilmApiDep = Readonly<{
@@ -15,7 +16,8 @@ export type FilmApiDep = Readonly<{
 
 export function createFilmApi(deps: FilmApiDeps): FilmApi {
   return {
-    async createFilm(data: CreateFilmDto) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async createFilm(data: CreateFilmDto, _user: UserDto) {
       const filmResult = createFilm(data);
 
       if (!filmResult.ok) return err(filmResult.error.type);

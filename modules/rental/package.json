@@ -24,6 +24,7 @@
     "vitest": "^3.2.4",
     "@repo/film": "workspace:*",
     "@repo/schema-validator": "workspace:*",
-    "@repo/type-safe-errors": "workspace:*"
+    "@repo/type-safe-errors": "workspace:*",
+    "@repo/auth": "workspace:*"
   }
 }
