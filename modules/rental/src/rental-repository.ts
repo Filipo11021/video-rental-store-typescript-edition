@@ -1,14 +1,14 @@
 import { err, ok, Result } from '@repo/type-safe-errors';
 import { Rental } from './rental.ts';
 
-export type RentalRepositoryDep = Readonly<{
-  rentalRepository: RentalRepository;
-}>;
-
 type RentalRepository = Readonly<{
   save: (rental: Rental) => Promise<Result<Rental, RentalRepositorySaveError>>;
   update: (rental: Rental) => Promise<Result<Rental, RentalRepositoryNotFoundError>>;
   getById: (id: string) => Promise<Result<Rental, RentalRepositoryNotFoundError>>;
+}>;
+
+export type RentalRepositoryDep = Readonly<{
+  rentalRepository: RentalRepository;
 }>;
 
 type RentalRepositorySaveError = Readonly<{

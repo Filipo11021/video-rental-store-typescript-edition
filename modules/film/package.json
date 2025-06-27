@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint src/ --max-warnings 0",
     "lint:fix": "eslint src/ --max-warnings 0 --fix",
-    "test": "vitest"
+    "test": "vitest",
+    "check-types": "tsc --noEmit"
   },
   "exports": {
     "./api": "./src/api.ts",

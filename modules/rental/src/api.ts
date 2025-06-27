@@ -10,14 +10,13 @@ type Protected = Readonly<{
   currentUser: UserDto;
 }>;
 
-type RentalApiDeps = FilmApiDep & RentalRepositoryDep;
-
 export type RentalApi = Readonly<{
   rent: (arg: { data: CreateRentDto } & Protected) => Promise<Result<RentDto, UnauthorizedError | SaveRentalError>>;
   return: (
     arg: { data: CreateReturnDto } & Protected,
   ) => Promise<Result<ReturnDto, UnauthorizedError | UpdateRentalError>>;
 }>;
+
 export type RentalApiDep = Readonly<{
   rentalApi: RentalApi;
 }>;
@@ -37,7 +36,7 @@ type UpdateRentalError = Readonly<{
   message: string;
 }>;
 
-export function createRentalApi(deps: RentalApiDeps): RentalApi {
+export function createRentalApi(deps: FilmApiDep & RentalRepositoryDep): RentalApi {
   return {
     rent: async ({ data, currentUser }) => {
       const filmResult = await deps.filmApi.getFilm(data.filmId);
