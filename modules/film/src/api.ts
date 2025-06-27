@@ -11,6 +11,7 @@ type Protected = Readonly<{
 export type FilmApi = Readonly<{
   createFilm: (arg: { data: CreateFilmDto } & Protected) => Promise<Result<FilmDto, FilmApiCreateFilmError>>;
   getFilm: (id: string) => Promise<Result<FilmDto, FilmApiGetFilmError>>;
+  getFilms: () => Promise<Result<FilmDto[], FilmApiGetFilmsError>>;
 }>;
 
 export type FilmApiDep = Readonly<{
@@ -24,6 +25,11 @@ type FilmApiCreateFilmError = Readonly<{
 
 type FilmApiGetFilmError = Readonly<{
   type: 'FilmApiGetFilmError';
+  message: string;
+}>;
+
+type FilmApiGetFilmsError = Readonly<{
+  type: 'FilmApiGetFilmsError';
   message: string;
 }>;
 
@@ -63,6 +69,16 @@ export function createFilmApi(deps: FilmRepositoryDep): FilmApi {
         });
 
       return ok(filmToDto(filmResult.value));
+    },
+    async getFilms() {
+      const filmsResult = await deps.filmRepository.findAll();
+      if (!filmsResult.ok)
+        return err({
+          type: 'FilmApiGetFilmsError',
+          message: filmsResult.error.message,
+        });
+
+      return ok(filmsResult.value.map(filmToDto));
     },
   };
 }

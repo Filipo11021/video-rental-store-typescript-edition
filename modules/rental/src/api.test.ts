@@ -7,6 +7,7 @@ import { ok } from '@repo/type-safe-errors';
 const mockFilmApi: FilmApi = {
   createFilm: vi.fn(),
   getFilm: vi.fn(),
+  getFilms: vi.fn(),
 };
 
 describe('rental api', () => {

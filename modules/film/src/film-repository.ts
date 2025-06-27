@@ -11,9 +11,15 @@ type FilmRepositoryNotFoundError = Readonly<{
   message: string;
 }>;
 
+type UnknownError = Readonly<{
+  type: 'UnknownError';
+  message: string;
+}>;
+
 type FilmRepository = Readonly<{
   save: (film: Film) => Promise<Result<Film, FilmRepositorySaveError>>;
   findById: (id: FilmId) => Promise<Result<Film, FilmRepositoryNotFoundError>>;
+  findAll: () => Promise<Result<Film[], UnknownError>>;
 }>;
 
 export type FilmRepositoryDep = Readonly<{
@@ -54,6 +60,19 @@ export function createInMemoryFilmRepository(): FilmRepository {
         (error) => {
           return {
             type: 'FilmRepositoryNotFoundError',
+            message: error instanceof Error ? error.message : 'Unknown error',
+          } as const;
+        },
+      );
+    },
+    async findAll() {
+      return tryAsync(
+        async () => {
+          return Array.from(films.values());
+        },
+        (error) => {
+          return {
+            type: 'UnknownError',
             message: error instanceof Error ? error.message : 'Unknown error',
           } as const;
         },
