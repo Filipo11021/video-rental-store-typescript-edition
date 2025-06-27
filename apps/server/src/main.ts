@@ -48,13 +48,10 @@ if (!authorizeResult.ok) {
   process.exit(1);
 }
 
-const filmResult = await filmModule.api.createFilm(
-  {
-    title: 'The Matrix',
-    type: 'regular',
-  },
-  authorizeResult.value,
-);
+const filmResult = await filmModule.api.createFilm({
+  data: { title: 'The Matrix', type: 'regular' },
+  currentUser: authorizeResult.value,
+});
 
 if (!filmResult.ok) {
   console.error(filmResult.error);
@@ -63,12 +60,10 @@ if (!filmResult.ok) {
 
 console.log(`Film with id ${filmResult.value.id} created successfully`);
 
-const rentalResult = await rentalModule.api.rent(
-  {
-    filmId: filmResult.value.id,
-  },
-  authorizeResult.value,
-);
+const rentalResult = await rentalModule.api.rent({
+  data: { filmId: filmResult.value.id },
+  currentUser: authorizeResult.value,
+});
 
 if (!rentalResult.ok) {
   console.error(rentalResult.error);
@@ -77,12 +72,10 @@ if (!rentalResult.ok) {
 
 console.log(`Film with id ${filmResult.value.id} rented successfully, rental id: ${rentalResult.value.id}`);
 
-const returnResult = await rentalModule.api.return(
-  {
-    rentalId: rentalResult.value.id,
-  },
-  authorizeResult.value,
-);
+const returnResult = await rentalModule.api.return({
+  data: { rentalId: rentalResult.value.id },
+  currentUser: authorizeResult.value,
+});
 
 if (!returnResult.ok) {
   console.error(returnResult.error);

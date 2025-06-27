@@ -12,13 +12,10 @@ describe('Film API', () => {
   };
 
   test('should show created film', async () => {
-    const createFilmResult = await filmApi.createFilm(
-      {
-        title: 'The Godfather',
-        type: 'old',
-      },
-      mockUser,
-    );
+    const createFilmResult = await filmApi.createFilm({
+      data: { title: 'The Godfather', type: 'old' },
+      currentUser: mockUser,
+    });
     if (!createFilmResult.ok) throw new Error('Failed to create film');
 
     const filmResult = await filmApi.getFilm(createFilmResult.value.id);

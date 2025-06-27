@@ -6,13 +6,16 @@ import { CreateRentDto, CreateReturnDto, RentDto, ReturnDto } from './dto.ts';
 import { UserDto } from '@repo/auth/dto';
 import { canRentFilm, canReturnFilm } from './rental-permissions.ts';
 
+type Protected = Readonly<{
+  currentUser: UserDto;
+}>;
+
 type RentalApiDeps = FilmApiDep & RentalRepositoryDep;
 
 export type RentalApi = Readonly<{
-  rent: (data: CreateRentDto, customer: UserDto) => Promise<Result<RentDto, UnauthorizedError | SaveRentalError>>;
+  rent: (arg: { data: CreateRentDto } & Protected) => Promise<Result<RentDto, UnauthorizedError | SaveRentalError>>;
   return: (
-    data: CreateReturnDto,
-    customer: UserDto,
+    arg: { data: CreateReturnDto } & Protected,
   ) => Promise<Result<ReturnDto, UnauthorizedError | UpdateRentalError>>;
 }>;
 export type RentalApiDep = Readonly<{
@@ -36,7 +39,7 @@ type UpdateRentalError = Readonly<{
 
 export function createRentalApi(deps: RentalApiDeps): RentalApi {
   return {
-    rent: async (data, customer) => {
+    rent: async ({ data, currentUser }) => {
       const filmResult = await deps.filmApi.getFilm(data.filmId);
       if (!filmResult.ok)
         return err({
@@ -44,7 +47,7 @@ export function createRentalApi(deps: RentalApiDeps): RentalApi {
           message: 'Film not exists',
         });
 
-      if (!canRentFilm(customer.id))
+      if (!canRentFilm(currentUser.id))
         return err({
           type: 'UnauthorizedError',
           message: 'Unauthorized',
@@ -52,7 +55,7 @@ export function createRentalApi(deps: RentalApiDeps): RentalApi {
 
       const rentalResult = createRental({
         filmId: data.filmId,
-        customerId: customer.id,
+        customerId: currentUser.id,
         status: 'rented',
       });
       if (!rentalResult.ok)
@@ -75,7 +78,7 @@ export function createRentalApi(deps: RentalApiDeps): RentalApi {
         createdAt: rentalResult.value.createdAt,
       });
     },
-    return: async (data, currentUser: UserDto) => {
+    return: async ({ data, currentUser }) => {
       const rentalResult = await deps.rentalRepository.getById(data.rentalId);
       if (!rentalResult.ok)
         return err({

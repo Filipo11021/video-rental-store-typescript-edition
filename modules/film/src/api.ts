@@ -6,8 +6,12 @@ import { err, ok, Result } from '@repo/type-safe-errors';
 
 type FilmApiDeps = FilmRepositoryDep;
 
+type Protected = Readonly<{
+  currentUser: UserDto;
+}>;
+
 export type FilmApi = Readonly<{
-  createFilm: (film: CreateFilmDto, user: UserDto) => Promise<Result<FilmDto, FilmApiCreateFilmError>>;
+  createFilm: (arg: { data: CreateFilmDto } & Protected) => Promise<Result<FilmDto, FilmApiCreateFilmError>>;
   getFilm: (id: string) => Promise<Result<FilmDto, FilmApiGetFilmError>>;
 }>;
 
@@ -27,8 +31,7 @@ type FilmApiGetFilmError = Readonly<{
 
 export function createFilmApi(deps: FilmApiDeps): FilmApi {
   return {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async createFilm(data, _user) {
+    async createFilm({ data }) {
       const filmResult = createFilm(data);
 
       if (!filmResult.ok)

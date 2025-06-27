@@ -35,19 +35,20 @@ describe('rental api', () => {
       filmId: mockedFilm.id,
     };
 
-    const rentResult = await rentalApi.rent(rentalData, userDto);
+    const rentResult = await rentalApi.rent({
+      data: rentalData,
+      currentUser: userDto,
+    });
 
     if (!rentResult.ok) throw new Error('Rent failed');
 
     expect(rentResult.value.filmId).toBe(mockedFilm.id);
     expect(rentResult.value.customerId).toBe(userDto.id);
 
-    const returnResult = await rentalApi.return(
-      {
-        rentalId: rentResult.value.id,
-      },
-      userDto,
-    );
+    const returnResult = await rentalApi.return({
+      data: { rentalId: rentResult.value.id },
+      currentUser: userDto,
+    });
 
     if (!returnResult.ok) throw new Error('Return failed');
 
@@ -68,22 +69,23 @@ describe('rental api', () => {
       filmId: mockedFilm.id,
     };
 
-    const rentResult = await rentalApi.rent(rentalData, userDto);
+    const rentResult = await rentalApi.rent({
+      data: rentalData,
+      currentUser: userDto,
+    });
 
     if (!rentResult.ok) throw new Error('Rent failed');
 
     expect(rentResult.value.filmId).toBe(mockedFilm.id);
     expect(rentResult.value.customerId).toBe(userDto.id);
 
-    const returnResult = await rentalApi.return(
-      {
-        rentalId: rentResult.value.id,
-      },
-      {
+    const returnResult = await rentalApi.return({
+      data: { rentalId: rentResult.value.id },
+      currentUser: {
         id: 'test',
         name: 'Test',
       },
-    );
+    });
 
     expect(returnResult.ok).toBe(false);
   });
