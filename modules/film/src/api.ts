@@ -7,33 +7,59 @@ import { err, ok, Result } from '@repo/type-safe-errors';
 type FilmApiDeps = FilmRepositoryDep;
 
 export type FilmApi = Readonly<{
-  createFilm: (film: CreateFilmDto, user: UserDto) => Promise<Result<FilmDto, string>>;
-  getFilm: (id: string) => Promise<Result<FilmDto, string>>;
+  createFilm: (film: CreateFilmDto, user: UserDto) => Promise<Result<FilmDto, FilmApiCreateFilmError>>;
+  getFilm: (id: string) => Promise<Result<FilmDto, FilmApiGetFilmError>>;
 }>;
 
 export type FilmApiDep = Readonly<{
   filmApi: FilmApi;
 }>;
 
+type FilmApiCreateFilmError = Readonly<{
+  type: 'FilmApiCreateFilmError';
+  message: string;
+}>;
+
+type FilmApiGetFilmError = Readonly<{
+  type: 'FilmApiGetFilmError';
+  message: string;
+}>;
+
 export function createFilmApi(deps: FilmApiDeps): FilmApi {
   return {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async createFilm(data: CreateFilmDto, _user: UserDto) {
+    async createFilm(data, _user) {
       const filmResult = createFilm(data);
 
-      if (!filmResult.ok) return err(filmResult.error.type);
+      if (!filmResult.ok)
+        return err({
+          type: 'FilmApiCreateFilmError',
+          message: filmResult.error.type,
+        });
 
       const savedFilmResult = await deps.filmRepository.save(filmResult.value);
-      if (!savedFilmResult.ok) return err(savedFilmResult.error.message);
+      if (!savedFilmResult.ok)
+        return err({
+          type: 'FilmApiCreateFilmError',
+          message: savedFilmResult.error.message,
+        });
 
       return ok(filmToDto(savedFilmResult.value));
     },
-    getFilm: async (id: string): Promise<Result<FilmDto, string>> => {
+    async getFilm(id) {
       const filmIdResult = filmId.from(id);
-      if (!filmIdResult.ok) return err(filmIdResult.error.type);
+      if (!filmIdResult.ok)
+        return err({
+          type: 'FilmApiGetFilmError',
+          message: filmIdResult.error.type,
+        });
 
       const filmResult = await deps.filmRepository.findById(filmIdResult.value);
-      if (!filmResult.ok) return err(filmResult.error.message);
+      if (!filmResult.ok)
+        return err({
+          type: 'FilmApiGetFilmError',
+          message: filmResult.error.message,
+        });
 
       return ok(filmToDto(filmResult.value));
     },

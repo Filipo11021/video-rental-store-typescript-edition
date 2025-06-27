@@ -16,13 +16,16 @@ export const film = object({
 
 export type Film = typeof film.Type;
 
-type FilmError = { type: 'InvalidFilm' } | { type: 'InvalidFilmId' };
+type FilmError =
+  | { type: 'InvalidFilm'; reason: typeof film.Errors.reason; value: unknown }
+  | { type: 'InvalidFilmId'; value: unknown };
 
 export function createFilm(data: CreateFilmDto): Result<Film, FilmError> {
   const filmIdResult = createFilmId();
   if (!filmIdResult.ok)
     return err({
       type: 'InvalidFilmId',
+      value: filmIdResult.error.value,
     });
 
   const filmResult = film.from({
@@ -32,7 +35,13 @@ export function createFilm(data: CreateFilmDto): Result<Film, FilmError> {
     createdAt: new Date(),
   });
 
-  if (!filmResult.ok) return err({ type: 'InvalidFilm' });
+  if (!filmResult.ok) {
+    return err({
+      type: 'InvalidFilm',
+      reason: filmResult.error.reason,
+      value: filmResult.error.value,
+    });
+  }
 
   return ok(filmResult.value);
 }

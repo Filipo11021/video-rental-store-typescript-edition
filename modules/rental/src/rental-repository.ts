@@ -6,9 +6,19 @@ export type RentalRepositoryDep = Readonly<{
 }>;
 
 type RentalRepository = Readonly<{
-  save: (rental: Rental) => Promise<Result<Rental, string>>;
-  update: (rental: Rental) => Promise<Result<Rental, string>>;
-  getById: (id: string) => Promise<Result<Rental, string>>;
+  save: (rental: Rental) => Promise<Result<Rental, RentalRepositorySaveError>>;
+  update: (rental: Rental) => Promise<Result<Rental, RentalRepositoryNotFoundError>>;
+  getById: (id: string) => Promise<Result<Rental, RentalRepositoryNotFoundError>>;
+}>;
+
+type RentalRepositorySaveError = Readonly<{
+  type: 'RentalRepositorySaveError';
+  message: string;
+}>;
+
+type RentalRepositoryNotFoundError = Readonly<{
+  type: 'RentalRepositoryNotFoundError';
+  message: string;
 }>;
 
 export function createInMemoryRentalRepository(): RentalRepository {
@@ -20,13 +30,21 @@ export function createInMemoryRentalRepository(): RentalRepository {
     },
     update: async (rental: Rental) => {
       const index = rentals.findIndex((r) => r.id === rental.id);
-      if (index === -1) return err('Rental not found');
+      if (index === -1)
+        return err({
+          type: 'RentalRepositoryNotFoundError',
+          message: 'Rental not found',
+        });
       rentals[index] = rental;
       return ok(rental);
     },
     getById: async (id: string) => {
       const rental = rentals.find((r) => r.id === id);
-      if (!rental) return err('Rental not found');
+      if (!rental)
+        return err({
+          type: 'RentalRepositoryNotFoundError',
+          message: 'Rental not found',
+        });
       return ok(rental);
     },
   };

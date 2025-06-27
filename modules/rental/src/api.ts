@@ -9,30 +9,64 @@ import { canRentFilm, canReturnFilm } from './rental-permissions.ts';
 type RentalApiDeps = FilmApiDep & RentalRepositoryDep;
 
 export type RentalApi = Readonly<{
-  rent: (data: CreateRentDto, customer: UserDto) => Promise<Result<RentDto, string>>;
-  return: (data: CreateReturnDto, customer: UserDto) => Promise<Result<ReturnDto, string>>;
+  rent: (data: CreateRentDto, customer: UserDto) => Promise<Result<RentDto, UnauthorizedError | SaveRentalError>>;
+  return: (
+    data: CreateReturnDto,
+    customer: UserDto,
+  ) => Promise<Result<ReturnDto, UnauthorizedError | UpdateRentalError>>;
 }>;
 export type RentalApiDep = Readonly<{
   rentalApi: RentalApi;
+}>;
+
+type UnauthorizedError = Readonly<{
+  type: 'UnauthorizedError';
+  message: string;
+}>;
+
+type SaveRentalError = Readonly<{
+  type: 'SaveRentalError';
+  message: string;
+}>;
+
+type UpdateRentalError = Readonly<{
+  type: 'UpdateRentalError';
+  message: string;
 }>;
 
 export function createRentalApi(deps: RentalApiDeps): RentalApi {
   return {
     rent: async (data, customer) => {
       const filmResult = await deps.filmApi.getFilm(data.filmId);
-      if (!filmResult.ok) return err('Film not exists');
+      if (!filmResult.ok)
+        return err({
+          type: 'UnauthorizedError',
+          message: 'Film not exists',
+        });
 
-      if (!canRentFilm(customer.id)) return err('Unauthorized');
+      if (!canRentFilm(customer.id))
+        return err({
+          type: 'UnauthorizedError',
+          message: 'Unauthorized',
+        });
 
       const rentalResult = createRental({
         filmId: data.filmId,
         customerId: customer.id,
         status: 'rented',
       });
-      if (!rentalResult.ok) return err(rentalResult.error.type);
+      if (!rentalResult.ok)
+        return err({
+          type: 'SaveRentalError',
+          message: rentalResult.error.type,
+        });
 
       const savedRentalResult = await deps.rentalRepository.save(rentalResult.value);
-      if (!savedRentalResult.ok) return err(savedRentalResult.error);
+      if (!savedRentalResult.ok)
+        return err({
+          type: 'SaveRentalError',
+          message: savedRentalResult.error.type,
+        });
 
       return ok({
         id: savedRentalResult.value.id,
@@ -43,7 +77,11 @@ export function createRentalApi(deps: RentalApiDeps): RentalApi {
     },
     return: async (data, currentUser: UserDto) => {
       const rentalResult = await deps.rentalRepository.getById(data.rentalId);
-      if (!rentalResult.ok) return err(rentalResult.error);
+      if (!rentalResult.ok)
+        return err({
+          type: 'UnauthorizedError',
+          message: 'Unauthorized',
+        });
 
       if (
         !canReturnFilm({
@@ -51,13 +89,20 @@ export function createRentalApi(deps: RentalApiDeps): RentalApi {
           rentalAuthorId: rentalResult.value.customerId,
         })
       )
-        return err('Unauthorized');
+        return err({
+          type: 'UnauthorizedError',
+          message: 'Unauthorized',
+        });
 
       const returnRentalResult = await deps.rentalRepository.update({
         ...rentalResult.value,
         status: 'returned',
       });
-      if (!returnRentalResult.ok) return err(returnRentalResult.error);
+      if (!returnRentalResult.ok)
+        return err({
+          type: 'UpdateRentalError',
+          message: returnRentalResult.error.type,
+        });
 
       return ok({ rentalId: data.rentalId });
     },

@@ -24,11 +24,13 @@ export const rental = object({
 
 export type Rental = typeof rental.Type;
 
-type RentalError = { type: 'InvalidRentalId' } | { type: 'InvalidRental' };
+type RentalError =
+  | Readonly<{ type: 'InvalidRentalId'; value: unknown }>
+  | Readonly<{ type: 'InvalidRental'; reason: typeof rental.Errors.reason; value: unknown }>;
 
 export function createRental(data: CreateRentalDto): Result<Rental, RentalError> {
   const rentalIdResult = createRentalId();
-  if (!rentalIdResult.ok) return err({ type: 'InvalidRentalId' });
+  if (!rentalIdResult.ok) return err({ type: 'InvalidRentalId', value: rentalIdResult.error.value });
 
   const rentalResult = rental.from({
     id: rentalIdResult.value,
@@ -37,7 +39,12 @@ export function createRental(data: CreateRentalDto): Result<Rental, RentalError>
     createdAt: new Date(),
     status: data.status,
   });
-  if (!rentalResult.ok) return err({ type: 'InvalidRental' });
+  if (!rentalResult.ok)
+    return err({
+      type: 'InvalidRental',
+      reason: rentalResult.error.reason,
+      value: rentalResult.error.value,
+    });
 
   return ok({
     id: rentalResult.value.id,
