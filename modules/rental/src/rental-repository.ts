@@ -5,6 +5,7 @@ type RentalRepository = Readonly<{
   save: (rental: Rental) => Promise<Result<Rental, RentalRepositorySaveError>>;
   update: (rental: Rental) => Promise<Result<Rental, RentalRepositoryNotFoundError>>;
   getById: (id: string) => Promise<Result<Rental, RentalRepositoryNotFoundError>>;
+  getAll: () => Promise<Result<Rental[], RentalRepositoryNotFoundError>>;
 }>;
 
 export type RentalRepositoryDep = Readonly<{
@@ -46,6 +47,9 @@ export function createInMemoryRentalRepository(): RentalRepository {
           message: 'Rental not found',
         });
       return ok(rental);
+    },
+    getAll: async () => {
+      return ok(rentals);
     },
   };
 }

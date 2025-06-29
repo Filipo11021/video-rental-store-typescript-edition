@@ -22,3 +22,10 @@ export type ReturnDto = Readonly<{
 export type CreateReturnDto = Readonly<{
   rentalId: string;
 }>;
+
+export type RentalDto = Readonly<{
+  id: string;
+  filmId: string;
+  customerId: string;
+  status: 'rented' | 'returned';
+}>;

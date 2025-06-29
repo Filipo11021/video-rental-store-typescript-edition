@@ -2,7 +2,7 @@ import { FilmApiDep } from '@repo/film/api';
 import { err, ok, Result } from '@repo/type-safe-errors';
 import { createRental } from './rental.ts';
 import { RentalRepositoryDep } from './rental-repository.ts';
-import { CreateRentDto, CreateReturnDto, RentDto, ReturnDto } from './dto.ts';
+import { CreateRentDto, CreateReturnDto, RentalDto, RentDto, ReturnDto } from './dto.ts';
 import { UserDto } from '@repo/auth/dto';
 import { canRentFilm, canReturnFilm } from './rental-permissions.ts';
 
@@ -15,6 +15,7 @@ export type RentalApi = Readonly<{
   return: (
     arg: { data: CreateReturnDto } & Protected,
   ) => Promise<Result<ReturnDto, UnauthorizedError | UpdateRentalError>>;
+  getRentals: (arg: Protected) => Promise<Result<RentalDto[], UnauthorizedError>>;
 }>;
 
 export type RentalApiDep = Readonly<{
@@ -107,6 +108,21 @@ export function createRentalApi(deps: FilmApiDep & RentalRepositoryDep): RentalA
         });
 
       return ok({ rentalId: data.rentalId });
+    },
+    getRentals: async ({ currentUser }) => {
+      const rentalsResult = await deps.rentalRepository.getAll();
+      if (!rentalsResult.ok) return err({ type: 'UnauthorizedError', message: 'Unauthorized' });
+
+      const rentalsByUser = rentalsResult.value.filter((rental) => rental.customerId === currentUser.id);
+
+      return ok(
+        rentalsByUser.map((rental) => ({
+          id: rental.id,
+          filmId: rental.filmId,
+          customerId: rental.customerId,
+          status: rental.status,
+        })),
+      );
     },
   };
 }

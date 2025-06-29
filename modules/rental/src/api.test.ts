@@ -46,6 +46,16 @@ describe('rental api', () => {
     expect(rentResult.value.filmId).toBe(mockedFilm.id);
     expect(rentResult.value.customerId).toBe(userDto.id);
 
+    const rentalsResult = await rentalApi.getRentals({ currentUser: userDto });
+    if (!rentalsResult.ok) throw new Error('Get rentals failed');
+    expect(rentalsResult.value.length).toBe(1);
+    expect(rentalsResult.value[0]).toEqual({
+      id: rentResult.value.id,
+      filmId: mockedFilm.id,
+      customerId: userDto.id,
+      status: 'rented',
+    });
+
     const returnResult = await rentalApi.return({
       data: { rentalId: rentResult.value.id },
       currentUser: userDto,
@@ -54,6 +64,17 @@ describe('rental api', () => {
     if (!returnResult.ok) throw new Error('Return failed');
 
     expect(returnResult.value.rentalId).toBe(rentResult.value.id);
+
+    const rentalsAfterReturnResult = await rentalApi.getRentals({ currentUser: userDto });
+
+    if (!rentalsAfterReturnResult.ok) throw new Error('Get rentals failed');
+    expect(rentalsAfterReturnResult.value.length).toBe(1);
+    expect(rentalsAfterReturnResult.value[0]).toEqual({
+      id: rentResult.value.id,
+      filmId: mockedFilm.id,
+      customerId: userDto.id,
+      status: 'returned',
+    });
   });
 
   it('should not rent a film if user is not authorized', async () => {
