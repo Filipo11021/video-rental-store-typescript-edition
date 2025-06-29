@@ -8,7 +8,8 @@
     "lint:fix": "eslint src/ --max-warnings 0 --fix",
     "check-types": "tsc --noEmit",
     "dev": "tsx watch src/main.ts",
-    "start": "tsx src/main.ts"
+    "start": "tsx src/main.ts",
+    "test": "vitest"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -23,6 +24,7 @@
     "@repo/film": "workspace:*",
     "@repo/rental": "workspace:*",
     "graphql": "^16.11.0",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "vitest": "^3.2.4"
   }
 }

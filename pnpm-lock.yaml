@@ -31,6 +31,9 @@ importers:
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@22.15.32)(tsx@4.20.3)
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
