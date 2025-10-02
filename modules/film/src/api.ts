@@ -1,8 +1,10 @@
 import type { UserDto } from '@repo/auth/dto';
 import { CreateFilmDto, FilmDto } from './film-dto.ts';
 import { FilmRepositoryDep } from './film-repository.ts';
-import { createFilm, CreateFilmDep, filmId, filmToDto } from './film.ts';
 import { err, ok, Result } from '@repo/type-safe-errors';
+import { createFilm, CreateFilmDep } from './film/create-film.ts';
+import { filmToDto } from './film/film-mapper.ts';
+import { filmId } from './film/film-id.ts';
 
 type Protected = Readonly<{
   currentUser: UserDto;

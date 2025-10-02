@@ -1,5 +1,6 @@
 import { Result, tryAsync } from '@repo/type-safe-errors';
-import { Film, FilmId } from './film.ts';
+import { Film } from './film/film.ts';
+import { FilmId } from './film/film-id.ts';
 
 type FilmRepositorySaveError = Readonly<{
   type: 'FilmRepositorySaveError';
