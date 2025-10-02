@@ -1,7 +1,7 @@
 import type { UserDto } from '@repo/auth/dto';
 import { CreateFilmDto, FilmDto } from './film-dto.ts';
 import { FilmRepositoryDep } from './film-repository.ts';
-import { createFilm, filmId, filmToDto } from './film.ts';
+import { createFilm, CreateFilmDep, filmId, filmToDto } from './film.ts';
 import { err, ok, Result } from '@repo/type-safe-errors';
 
 type Protected = Readonly<{
@@ -33,10 +33,10 @@ type FilmApiGetFilmsError = Readonly<{
   message: string;
 }>;
 
-export function createFilmApi(deps: FilmRepositoryDep): FilmApi {
+export function createFilmApi(deps: FilmRepositoryDep & CreateFilmDep): FilmApi {
   return {
     async createFilm({ data }) {
-      const filmResult = createFilm(data);
+      const filmResult = createFilm(data, deps);
 
       if (!filmResult.ok)
         return err({

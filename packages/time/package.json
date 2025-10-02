@@ -1,17 +1,16 @@
 {
-  "name": "@repo/film",
+  "name": "@repo/time",
   "version": "0.0.0",
   "type": "module",
   "private": true,
   "scripts": {
     "lint": "eslint src/ --max-warnings 0",
     "lint:fix": "eslint src/ --max-warnings 0 --fix",
-    "test": "vitest",
+    "test": "vitest ",
     "check-types": "tsc --noEmit"
   },
   "exports": {
-    "./api": "./src/api.ts",
-    "./module": "./src/module.ts"
+    ".": "./src/index.ts"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -21,10 +20,6 @@
     "typescript": "5.8.2"
   },
   "dependencies": {
-    "vitest": "^3.2.4",
-    "@repo/schema-validator": "workspace:*",
-    "@repo/type-safe-errors": "workspace:*",
-    "@repo/auth": "workspace:*",
-    "@repo/time": "workspace:*"
+    "vitest": "^3.2.4"
   }
 }

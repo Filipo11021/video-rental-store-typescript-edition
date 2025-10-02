@@ -1,10 +1,13 @@
 import { createInMemoryFilmRepository } from './film-repository.ts';
 import { createFilmApi } from './api.ts';
 import { describe, expect, test } from 'vitest';
+import { createTime } from '@repo/time';
 
 describe('Film API', () => {
   const filmRepository = createInMemoryFilmRepository();
-  const filmApi = createFilmApi({ filmRepository });
+  const time = createTime();
+
+  const filmApi = createFilmApi({ filmRepository, time });
 
   const mockUser = {
     id: '1',

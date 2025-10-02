@@ -2,6 +2,7 @@ import { literal, maxLength, minLength, object, String, union, brand, Date as Da
 import { randomUUID } from 'node:crypto';
 import { CreateFilmDto, FilmDto } from './film-dto.ts';
 import { err, ok, Result } from '@repo/type-safe-errors';
+import { TimeDep } from '@repo/time';
 
 export const filmId = brand('FilmId', String);
 export const createFilmId = () => filmId.from(randomUUID().toString());
@@ -20,7 +21,9 @@ type FilmError =
   | { type: 'InvalidFilm'; reason: typeof film.Errors.reason; value: unknown }
   | { type: 'InvalidFilmId'; value: unknown };
 
-export function createFilm(data: CreateFilmDto): Result<Film, FilmError> {
+export type CreateFilmDep = TimeDep;
+
+export function createFilm(data: CreateFilmDto, deps: CreateFilmDep): Result<Film, FilmError> {
   const filmIdResult = createFilmId();
   if (!filmIdResult.ok)
     return err({
@@ -32,7 +35,7 @@ export function createFilm(data: CreateFilmDto): Result<Film, FilmError> {
     id: filmIdResult.value,
     title: data.title,
     type: data.type,
-    createdAt: new Date(),
+    createdAt: new Date(deps.time.now()),
   });
 
   if (!filmResult.ok) {
